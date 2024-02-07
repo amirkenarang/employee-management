@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  employee-management:
+    build: .
+    image: employee-management
+    container_name: employee-management
+    environment:
+      - NODE_ENV=production
+      - NODE_TLS_REJECT_UNAUTHORIZED='0'
+
+      # employee-management DB Configuration
+      - MONGODB_HOST=localhost
+      - MONGODB_PORT=27017
+      - MONGODB_AUTH_USERNAME=
+      - MONGODB_AUTH_PASSWORD=
+      - MONGODB_DB=employee-management
+
+      - JWT_SECRET
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/usr/src/employee-management
+    restart: unless-stopped
+    networks:
+      - employee-management
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - '/local-address/mongodb/:/data/db'
+    restart: unless-stopped
+    networks:
+      - employee-management
+
+networks:
+  employee-management:
+    name: employee-management
+    driver: bridge
